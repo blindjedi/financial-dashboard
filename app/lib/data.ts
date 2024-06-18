@@ -1,4 +1,5 @@
-import { client, connectClient } from './dbConnection';
+import { Client } from 'pg';
+import dotenv from 'dotenv';
 import {
   CustomerField,
   CustomersTableType,
@@ -10,8 +11,23 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
+// Load environment variables
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: '.env.local' });
+} else {
+  dotenv.config();
+}
+
+const clientConfig = { connectionString: process.env.DATABASE_URL };
+
+async function connectClient() {
+  const client = new Client(clientConfig);
+  await client.connect();
+  return client;
+}
+
 export async function fetchRevenue() {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query<Revenue>('SELECT * FROM revenue');
@@ -19,11 +35,13 @@ export async function fetchRevenue() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function fetchLatestInvoices() {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query<LatestInvoiceRaw>(`
@@ -42,11 +60,13 @@ export async function fetchLatestInvoices() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest invoices.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function fetchCardData() {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const invoiceCountPromise = client.query('SELECT COUNT(*) FROM invoices');
@@ -78,12 +98,14 @@ export async function fetchCardData() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
+  } finally {
+    await client.end();
   }
 }
 
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(query: string, currentPage: number) {
-  await connectClient();
+  const client = await connectClient();
 
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -113,11 +135,13 @@ export async function fetchFilteredInvoices(query: string, currentPage: number) 
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoices.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function fetchInvoicesPages(query: string) {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query(`
@@ -137,11 +161,13 @@ export async function fetchInvoicesPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of invoices.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function fetchInvoiceById(id: string) {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query<InvoiceForm>(`
@@ -163,11 +189,13 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function fetchCustomers() {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query<CustomerField>(`
@@ -182,11 +210,13 @@ export async function fetchCustomers() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch all customers.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function fetchFilteredCustomers(query: string) {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query<CustomersTableType>(`
@@ -217,11 +247,13 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch customer table.');
+  } finally {
+    await client.end();
   }
 }
 
 export async function getUser(email: string) {
-  await connectClient();
+  const client = await connectClient();
 
   try {
     const res = await client.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -229,5 +261,7 @@ export async function getUser(email: string) {
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
+  } finally {
+    await client.end();
   }
 }
