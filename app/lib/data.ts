@@ -19,14 +19,23 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
 
+// Determine the appropriate connection string
+let connectionString = process.env.POSTGRES_URL;
+
+if (process.env.NODE_ENV === 'production') {
+  connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL;
+
+}
+
+
 // Initialize client configuration using environment variables
 const clientConfig = {
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-
 };
 
 async function connectClient() {
+  logger.info(`Using connection string: ${connectionString}`);
   logger.info('Connecting to the database with config:', clientConfig);
   const client = new Client(clientConfig);
   await client.connect();
