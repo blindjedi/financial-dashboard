@@ -1,5 +1,6 @@
 import { Client } from 'pg';
 import dotenv from 'dotenv';
+import logger from './logger';
 import {
   CustomerField,
   CustomersTableType,
@@ -11,16 +12,22 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
-// Load environment variables
+// Load environment variables only in non-production environments
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: '.env.local' });
 } else {
   dotenv.config();
 }
 
-const clientConfig = { connectionString: process.env.DATABASE_URL };
+// Initialize client configuration using environment variables
+const clientConfig = {
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+
+};
 
 async function connectClient() {
+  logger.info('Connecting to the database with config:', clientConfig);
   const client = new Client(clientConfig);
   await client.connect();
   return client;
