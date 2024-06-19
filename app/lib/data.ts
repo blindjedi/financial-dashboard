@@ -37,8 +37,14 @@ const clientConfig = {
 };
 
 async function connectClient() {
-  logger.info(`Using connection string: ${connectionString}`);
-  logger.info('Connecting to the database with config:', clientConfig);
+  if (connectionString?.includes('localhost')) {
+    logger.info('Using local database');
+  }
+  else {
+    logger.info('Using production database');
+    logger.info('Database connection string:', connectionString);
+  }
+
   const client = new Client(clientConfig);
   await client.connect();
   return client;
