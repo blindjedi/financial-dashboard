@@ -55,7 +55,13 @@ export async function fetchRevenue() {
   noStore();
 
   try {
+    // Simulate a 3 second delay
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const res = await client.query<Revenue>('SELECT * FROM revenue');
+    console.log('Data fetch completed after 3 seconds.');
+
     return res.rows;
   } catch (error) {
     console.error('Database Error:', error);
