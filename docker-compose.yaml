@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: nextjs_financial_db
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: nextjs_financial_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - nextjs_financial_data:/var/lib/postgresql/data
+
+volumes:
+  nextjs_financial_data:
