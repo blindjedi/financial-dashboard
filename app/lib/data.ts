@@ -56,11 +56,11 @@ export async function fetchRevenue() {
 
   try {
     // Simulate a 3 second delay
-    console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // console.log('Fetching revenue data...');
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const res = await client.query<Revenue>('SELECT * FROM revenue');
-    console.log('Data fetch completed after 3 seconds.');
+    // console.log('Data fetch completed after 3 seconds.');
 
     return res.rows;
   } catch (error) {
@@ -76,6 +76,10 @@ export async function fetchLatestInvoices() {
   noStore();
 
   try {
+      // Simulate a 3 second delay
+  // console.log('Fetching invoice data...');
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const res = await client.query<LatestInvoiceRaw>(`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
@@ -83,6 +87,7 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5
     `);
+    console.log('Data fetch completed after 3 seconds.');
 
     const latestInvoices = res.rows.map((invoice) => ({
       ...invoice,
