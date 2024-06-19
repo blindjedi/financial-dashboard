@@ -11,6 +11,8 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { unstable_noStore as noStore } from 'next/cache';
+
 
 // Load environment variables only in non-production environments
 if (process.env.NODE_ENV !== 'production') {
@@ -35,8 +37,14 @@ const clientConfig = {
 };
 
 async function connectClient() {
-  logger.info(`Using connection string: ${connectionString}`);
-  logger.info('Connecting to the database with config:', clientConfig);
+  if (connectionString?.includes('localhost')) {
+    logger.info('Using local database');
+  }
+  else {
+    logger.info('Using production database');
+    logger.info('Database connection string:', connectionString);
+  }
+
   const client = new Client(clientConfig);
   await client.connect();
   return client;
@@ -44,9 +52,16 @@ async function connectClient() {
 
 export async function fetchRevenue() {
   const client = await connectClient();
+  noStore();
 
   try {
+    // Simulate a 3 second delay
+    // console.log('Fetching revenue data...');
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const res = await client.query<Revenue>('SELECT * FROM revenue');
+    // console.log('Data fetch completed after 3 seconds.');
+
     return res.rows;
   } catch (error) {
     console.error('Database Error:', error);
@@ -58,8 +73,13 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   const client = await connectClient();
+  noStore();
 
   try {
+      // Simulate a 3 second delay
+  // console.log('Fetching invoice data...');
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const res = await client.query<LatestInvoiceRaw>(`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
@@ -67,6 +87,7 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5
     `);
+    console.log('Data fetch completed after 3 seconds.');
 
     const latestInvoices = res.rows.map((invoice) => ({
       ...invoice,
@@ -83,6 +104,7 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   const client = await connectClient();
+  noStore();
 
   try {
     const invoiceCountPromise = client.query('SELECT COUNT(*) FROM invoices');
@@ -122,6 +144,7 @@ export async function fetchCardData() {
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(query: string, currentPage: number) {
   const client = await connectClient();
+  noStore();
 
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -158,6 +181,7 @@ export async function fetchFilteredInvoices(query: string, currentPage: number) 
 
 export async function fetchInvoicesPages(query: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query(`
@@ -184,6 +208,7 @@ export async function fetchInvoicesPages(query: string) {
 
 export async function fetchInvoiceById(id: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<InvoiceForm>(`
@@ -212,6 +237,7 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<CustomerField>(`
@@ -233,6 +259,7 @@ export async function fetchCustomers() {
 
 export async function fetchFilteredCustomers(query: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<CustomersTableType>(`
@@ -270,6 +297,7 @@ export async function fetchFilteredCustomers(query: string) {
 
 export async function getUser(email: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query('SELECT * FROM users WHERE email = $1', [email]);
