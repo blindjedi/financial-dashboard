@@ -11,6 +11,8 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { unstable_noStore as noStore } from 'next/cache';
+
 
 // Load environment variables only in non-production environments
 if (process.env.NODE_ENV !== 'production') {
@@ -44,6 +46,7 @@ async function connectClient() {
 
 export async function fetchRevenue() {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<Revenue>('SELECT * FROM revenue');
@@ -58,6 +61,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<LatestInvoiceRaw>(`
@@ -83,6 +87,7 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   const client = await connectClient();
+  noStore();
 
   try {
     const invoiceCountPromise = client.query('SELECT COUNT(*) FROM invoices');
@@ -122,6 +127,7 @@ export async function fetchCardData() {
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(query: string, currentPage: number) {
   const client = await connectClient();
+  noStore();
 
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -158,6 +164,7 @@ export async function fetchFilteredInvoices(query: string, currentPage: number) 
 
 export async function fetchInvoicesPages(query: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query(`
@@ -184,6 +191,7 @@ export async function fetchInvoicesPages(query: string) {
 
 export async function fetchInvoiceById(id: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<InvoiceForm>(`
@@ -212,6 +220,7 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<CustomerField>(`
@@ -233,6 +242,7 @@ export async function fetchCustomers() {
 
 export async function fetchFilteredCustomers(query: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query<CustomersTableType>(`
@@ -270,6 +280,7 @@ export async function fetchFilteredCustomers(query: string) {
 
 export async function getUser(email: string) {
   const client = await connectClient();
+  noStore();
 
   try {
     const res = await client.query('SELECT * FROM users WHERE email = $1', [email]);
