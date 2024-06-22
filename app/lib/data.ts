@@ -21,10 +21,13 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
 
+logger.info('NODE_ENV:', process.env.NODE_ENV);
+
 // Determine the appropriate connection string
 let connectionString = process.env.POSTGRES_URL;
 
 if (process.env.NODE_ENV === 'production') {
+  logger.info('Using connection string:', process.env.POSTGRES_URL_NON_POOLING);
   connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL;
 
 }
