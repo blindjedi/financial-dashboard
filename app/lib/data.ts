@@ -39,7 +39,7 @@ const clientConfig = {
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 };
 
-async function connectClient() {
+export async function connectClient() {
   if (connectionString?.includes('localhost')) {
     logger.info('Using local database');
   }
