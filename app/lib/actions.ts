@@ -28,12 +28,6 @@ export async function createInvoice(formData: FormData) {
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0];
 
-    // const client = new Client({
-    //     connectionString: process.env.POSTGRES_URL,
-    //     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    // });
-
-    // await client.connect();
     const client = await connectClient();
 
     try {
@@ -49,4 +43,33 @@ export async function createInvoice(formData: FormData) {
     redirect('/dashboard/invoices');
 
 
+}
+
+
+// Use Zod to update the expected types
+const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+
+// ...
+
+export async function updateInvoice(id: string, formData: FormData) {
+    const { customerId, amount, status } = UpdateInvoice.parse({
+        customerId: formData.get('customerId'),
+        amount: formData.get('amount'),
+        status: formData.get('status'),
+    });
+
+    const amountInCents = amount * 100;
+    const client = await connectClient();
+
+    try {
+        await client.query(
+            'UPDATE invoices SET customer_id = $1, amount = $2, status = $3 WHERE id = $4',
+            [customerId, amountInCents, status, id]
+        );
+    } finally {
+        await client.end();
+    }
+
+    revalidatePath('/dashboard/invoices');
+    redirect('/dashboard/invoices');
 }
