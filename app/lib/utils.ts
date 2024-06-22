@@ -35,7 +35,14 @@ export const generateYAxis = (revenue: Revenue[]) => {
   return { yAxisLabels, topLabel };
 };
 
-export const generatePagination = (currentPage: number, totalPages: number) => {
+/**
+ * Generates an array representing the pagination for a given current page and total pages.
+ *
+ * @param {number} currentPage - The current page number.
+ * @param {number} totalPages - The total number of pages.
+ * @return {(number | string)[]} An array of numbers and/or strings representing the pagination.
+ */
+export const generatePagination = (currentPage: number, totalPages: number): (number | string)[] => {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.
   if (totalPages <= 7) {
