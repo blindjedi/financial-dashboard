@@ -27,9 +27,11 @@ logger.info('NODE_ENV:', process.env.NODE_ENV);
 let connectionString = process.env.POSTGRES_URL;
 
 if (process.env.NODE_ENV === 'production') {
-  logger.info('Using connection string:', process.env.POSTGRES_URL_NON_POOLING);
+  logger.info('Using PROD connection string:', process.env.POSTGRES_URL_NON_POOLING);
   connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL;
-
+}
+else {
+  logger.info('Using local connection string:', process.env.POSTGRES_URL);
 }
 
 
