@@ -88,4 +88,4 @@ export async function deleteInvoice(id: string) {
     }
 
     revalidatePath('/dashboard/invoices');
-  }
+}
