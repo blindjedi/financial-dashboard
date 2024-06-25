@@ -19,6 +19,7 @@ const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
 
 export async function createInvoice(formData: FormData) {
+
     const { customerId, amount, status } = CreateInvoice.parse({
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
@@ -35,6 +36,10 @@ export async function createInvoice(formData: FormData) {
             'INSERT INTO invoices (customer_id, amount, status, date) VALUES ($1, $2, $3, $4)',
             [customerId, amountInCents, status, date]
         );
+    } catch (error) {
+        return {
+            message: "Database Error: Failed to Create Invoice"
+        }
     } finally {
         await client.end();
     }
@@ -66,7 +71,12 @@ export async function updateInvoice(id: string, formData: FormData) {
             'UPDATE invoices SET customer_id = $1, amount = $2, status = $3 WHERE id = $4',
             [customerId, amountInCents, status, id]
         );
-    } finally {
+    } catch (error) {
+        return {
+            message: "Database Error: Failed to Update Invoice"
+        }
+    }
+    finally {
         await client.end();
     }
 
@@ -83,9 +93,13 @@ export async function deleteInvoice(id: string) {
             'DELETE FROM invoices WHERE id = $1',
             [id]
         );
+    } catch (error) {
+        return {
+            message: "Database Error: Failed to Delete Invoice"
+        }
     } finally {
         await client.end();
     }
 
     revalidatePath('/dashboard/invoices');
-  }
+}
