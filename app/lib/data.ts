@@ -42,17 +42,26 @@ const clientConfig = {
 };
 
 export async function connectClient() {
-  if (connectionString?.includes('localhost')) {
-    logger.info('Using local database');
-  }
-  else {
-    logger.info('Using production database');
-    logger.info('Database connection string:', connectionString);
-  }
+  try {
 
-  const client = new Client(clientConfig);
-  await client.connect();
-  return client;
+    if (connectionString?.includes('localhost')) {
+      logger.info('Using local database');
+    }
+    else {
+      logger.info('Using production database');
+      logger.info('Database connection string:', connectionString);
+    }
+
+    const client = new Client(clientConfig);
+    await client.connect();
+
+    logger.info('Database connected');
+    return client;
+  } catch (error) {
+    // console.error('Database connection error:', error);
+    logger.error('Database connection error:', error);
+    throw new Error('Failed to connect to the database. Check connection parameters and database availability.');
+  }
 }
 
 export async function fetchRevenue() {
@@ -81,9 +90,9 @@ export async function fetchLatestInvoices() {
   noStore();
 
   try {
-      // Simulate a 3 second delay
-  // console.log('Fetching invoice data...');
-  // await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Simulate a 3 second delay
+    // console.log('Fetching invoice data...');
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const res = await client.query<LatestInvoiceRaw>(`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
