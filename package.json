@@ -3,9 +3,10 @@
   "scripts": {
     "build": "next build",
     "dev": "NODE_ENV=development next dev",
+    "start": "NODE_ENV=production next start",
+    "lint": "next lint",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
-    "start": "NODE_ENV=production next start",
     "seed": "node -r dotenv/config ./scripts/seed.js",
     "seed-local": "node -r dotenv/config ./scripts/seed-local.js",
     "test-local-db": "node -r dotenv/config ./scripts/test-local-db.js"
