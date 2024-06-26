@@ -51,23 +51,23 @@ export async function createInvoice(formData: FormData) {
         }
     }
 
-    const amountInCents = amount * 100;
-    const date = new Date().toISOString().split('T')[0];
+    // const amountInCents = amount * 100;
+    // const date = new Date().toISOString().split('T')[0];
 
-    const client = await connectClient();
+    // const client = await connectClient();
 
-    try {
-        await client.query(
-            'INSERT INTO invoices (customer_id, amount, status, date) VALUES ($1, $2, $3, $4)',
-            [customerId, amountInCents, status, date]
-        );
-    } catch (error) {
-        return {
-            message: "Database Error: Failed to Create Invoice"
-        }
-    } finally {
-        await client.end();
-    }
+    // try {
+    //     await client.query(
+    //         'INSERT INTO invoices (customer_id, amount, status, date) VALUES ($1, $2, $3, $4)',
+    //         [customerId, amountInCents, status, date]
+    //     );
+    // } catch (error) {
+    //     return {
+    //         message: "Database Error: Failed to Create Invoice"
+    //     }
+    // } finally {
+    //     await client.end();
+    // }
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
