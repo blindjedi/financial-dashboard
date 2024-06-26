@@ -10,6 +10,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import { createInvoice, State } from '@/app/lib/actions';
+import clsx from 'clsx';
+
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   const [state, setState] = useState<State>({ message: null, errors: {} });
@@ -52,8 +54,8 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
             {state.errors?.customerId && (
-                    <p className="error">{state.errors.customerId.join(', ')}</p>
-                )}
+              <p className="error">{state.errors.customerId.join(', ')}</p>
+            )}
           </div>
         </div>
 
@@ -76,8 +78,10 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             </div>
           </div>
           {state.errors?.amount && (
-                    <p className="error">{state.errors.amount.join(', ')}</p>
-                )}
+            <p className={clsx({ 'text-red-500': state.errors?.amount })}>
+              {state.errors.amount.join(', ')}
+            </p>
+          )}
         </div>
 
         {/* Invoice Status */}
@@ -120,8 +124,10 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             </div>
           </div>
           {state.errors?.status && (
-                    <p className="error">{state.errors.status.join(', ')}</p>
-                )}
+            <p className={clsx({ 'text-red-500': state.errors?.status })}>
+              {state.errors.status.join(', ')}
+            </p>
+          )}
         </fieldset>
       </div>
       <div className="mt-6 flex justify-end gap-4">
